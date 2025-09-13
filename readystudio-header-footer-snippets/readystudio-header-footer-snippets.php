@@ -1,11 +1,11 @@
 <?php
 /**
- * Plugin Name: ReadyStudio — Header & Footer + Snippets
+ * Plugin Name: ReadyCode Pro — Header & Footer + Snippets
  * Description: افزودن کدهای سفارشی به هدر/فوتر/بدنه و مدیریت اسنیپت‌های PHP/CSS/JS با حالت ایمن (Safe Mode)، ایمپورت/اکسپورت و سوئیچ فعال/غیرفعال.
  * Version: 1.1.0
  * Author: Ready Studio (Fazel Ghaemi)
  * Author URI: https://readystudio.ir
- * Text Domain: readystudio-hf
+ * Text Domain: readycode-pro
  * Domain Path: /languages
  * Requires at least: 5.8
  * Requires PHP: 7.4

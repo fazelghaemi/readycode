@@ -22,8 +22,8 @@ add_action('admin_init', 'rshf_register_settings');
 function rshf_register_admin_menus(){
     $cap = rshf_capability();
     add_menu_page(
-        __('Ready HF & Snippets', 'readystudio-hf'),
-        __('Ready HF', 'readystudio-hf'),
+        __('ReadyCode Pro', 'readystudio-hf'),
+        __('ReadyCode Pro', 'readystudio-hf'),
         $cap,
         'rshf',
         'rshf_render_page_main',
@@ -46,7 +46,44 @@ function rshf_admin_enqueue($hook){
         wp_enqueue_style('rshf-admin', RSHF_URL . 'assets/admin.css', [], RSHF_VERSION);
         
         
-        // /* RSHF: inline font CSS */
+        
+            
+// /* RCP: table fix */
+wp_add_inline_style('rshf-admin', '/* RCP: fix list table structure on Snippets screens */
+body.post-type-rshf_snippet table.wp-list-table{table-layout:auto;border-collapse:collapse;width:100%}
+body.post-type-rshf_snippet table.wp-list-table thead{display:table-header-group}
+body.post-type-rshf_snippet table.wp-list-table tbody{display:table-row-group}
+body.post-type-rshf_snippet table.wp-list-table tr{display:table-row}
+body.post-type-rshf_snippet table.wp-list-table th, 
+body.post-type-rshf_snippet table.wp-list-table td{display:table-cell;vertical-align:middle}');
+// /* RCP: inline ReadyFont */
+            $rshf_font_path = RSHF_PATH . 'assets/fonts/readyfont.woff2';
+            $rshf_font_url  = RSHF_URL  . 'assets/fonts/readyfont.woff2';
+            if ( file_exists( $rshf_font_path ) ) {
+                $font_css = "
+                @font-face {
+                  font-family: 'ReadyFont';
+                  src: url('{$rshf_font_url}') format('woff2');
+                  font-weight: 100 900;
+                  font-style: normal;
+                  font-display: swap;
+                }
+                .rshf-wrap, .rshf-wrap *,
+                body.post-type-rshf_snippet, body.post-type-rshf_snippet *,
+                body[class*='page_rshf'], body[class*='page_rshf'] *,
+                body.toplevel_page_rshf, body.toplevel_page_rshf * {
+                  font-family: 'ReadyFont', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', 'Liberation Sans', sans-serif !important;
+                }";
+                wp_add_inline_style('rshf-admin', $font_css);
+                add_action('admin_head', function(){
+                    $screen = function_exists('get_current_screen') ? get_current_screen() : null;
+                    $is_rshf = ( isset($_GET['page']) && strpos(sanitize_text_field($_GET['page']), 'rshf') === 0 ) || ( $screen && isset($screen->post_type) && $screen->post_type === RSHF_CPT );
+                    if( $is_rshf ){
+                        echo '<link rel="preload" href="' . esc_url( RSHF_URL . 'assets/fonts/readyfont.woff2' ) . '" as="font" type="font/woff2" crossorigin>';
+                    }
+                });
+            }
+            // /* RSHF: inline font CSS */
         $rshf_font_path = RSHF_PATH . 'assets/fonts/readyfont.woff2';
         $rshf_font_url  = RSHF_URL  . 'assets/fonts/readyfont.woff2';
         if ( file_exists( $rshf_font_path ) ) {
@@ -97,6 +134,14 @@ function rshf_admin_enqueue($hook){
         wp_add_inline_style('rshf-admin', $inline_icons);
         
         wp_enqueue_script('rshf-admin', RSHF_URL . 'assets/admin.js', ['jquery'], RSHF_VERSION, true);
+        
+        if( !isset($GLOBALS['RSHF_LOC']) ){
+            wp_localize_script('rshf-admin', 'RSHF', [
+                'nonce' => wp_create_nonce('rshf_ajax'),
+                'ajax'  => admin_url('admin-ajax.php'),
+            ]);
+            $GLOBALS['RSHF_LOC'] = true;
+        }
         wp_localize_script('rshf-admin', 'RSHF', [
             'nonce' => wp_create_nonce('rshf_ajax'),
             'ajax'  => admin_url('admin-ajax.php'),
@@ -111,7 +156,7 @@ function rshf_brandbar(){
         <span class="logo">
             <img src="<?php echo esc_url(RSHF_URL . 'assets/readystudio-logo.svg'); ?>" alt="Ready Studio" width="28" height="28" loading="lazy">
         </span>
-        <span class="title">Ready Studio — Header &amp; Footer + Snippets</span>
+        <span class="title">ReadyCode Pro — Header &amp; Footer + Snippets</span>
         <span class="badge">v<?php echo esc_html(RSHF_VERSION); ?></span>
     </div>
     <?php
