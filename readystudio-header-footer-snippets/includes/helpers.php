@@ -2,7 +2,6 @@
 if ( ! defined('ABSPATH') ) { exit; }
 
 function rshf_capability(){
-    // Only site admins / network admins should manage
     return is_multisite() ? 'manage_network_options' : 'manage_options';
 }
 
@@ -26,23 +25,19 @@ function rshf_get_options(){
 function rshf_update_options($new){
     $opts = rshf_get_options();
     $opts = array_merge($opts, $new);
-    // bust cache when codes change
     if(isset($new['head_code']) || isset($new['body_code']) || isset($new['footer_code'])){
         $opts['cache_bust'] = time();
     }
     update_option('rshf_options', $opts);
-    // also clear transients
     delete_transient('rshf_cache_head');
     delete_transient('rshf_cache_body');
     delete_transient('rshf_cache_footer');
 }
 
 function rshf_sanitize_code_field($val){
-    // Allow admins to save raw code (requires unfiltered_html)
     if( rshf_current_user_can_manage() ){
         return (string)$val;
     }
-    // Fallback: sanitize as textarea
     return wp_kses_post( (string)$val );
 }
 

@@ -5,31 +5,24 @@ class RSHF_Front {
 
     public static function execute_php_snippets(){
         if( is_admin() ) return;
-        if( RSHF_SafeMode::is_enabled() ) return; // do not execute in safe mode
-
+        if( RSHF_SafeMode::is_enabled() ) return;
         $snippets = self::get_active_snippets('php');
         foreach($snippets as $s){
-            $code = $s['content'];
-            self::eval_php($code, $s['id']);
+            self::eval_php($s['content'], $s['id']);
         }
     }
 
     public static function print_head(){
-        // Aggregate global + snippets(header)
         $out = get_transient('rshf_cache_head');
         if(false === $out){
             $opts = rshf_get_options();
             $out = '';
-            if( !empty($opts['head_code']) ){
-                $out .= "\n" . $opts['head_code'] . "\n";
-            }
+            if( !empty($opts['head_code']) ) $out .= "\n" . $opts['head_code'] . "\n";
             $snippets = self::get_active_snippets(['js','css','html'], 'header');
             $out .= self::render_snippets($snippets);
             set_transient('rshf_cache_head', $out, HOUR_IN_SECONDS);
         }
-        if( $out ){
-            echo "\n<!-- RSHF: head -->\n" . $out . "\n<!-- /RSHF -->\n";
-        }
+        if( $out ) echo "\n<!-- RSHF: head -->\n$out\n<!-- /RSHF -->\n";
     }
 
     public static function print_body_open(){
@@ -37,16 +30,12 @@ class RSHF_Front {
         if(false === $out){
             $opts = rshf_get_options();
             $out = '';
-            if( !empty($opts['body_code']) ){
-                $out .= "\n" . $opts['body_code'] . "\n";
-            }
+            if( !empty($opts['body_code']) ) $out .= "\n" . $opts['body_code'] . "\n";
             $snippets = self::get_active_snippets(['js','css','html'], 'body');
             $out .= self::render_snippets($snippets);
             set_transient('rshf_cache_body', $out, HOUR_IN_SECONDS);
         }
-        if( $out ){
-            echo "\n<!-- RSHF: body_open -->\n" . $out . "\n<!-- /RSHF -->\n";
-        }
+        if( $out ) echo "\n<!-- RSHF: body_open -->\n$out\n<!-- /RSHF -->\n";
     }
 
     public static function print_footer(){
@@ -54,34 +43,25 @@ class RSHF_Front {
         if(false === $out){
             $opts = rshf_get_options();
             $out = '';
-            if( !empty($opts['footer_code']) ){
-                $out .= "\n" . $opts['footer_code'] . "\n";
-            }
+            if( !empty($opts['footer_code']) ) $out .= "\n" . $opts['footer_code'] . "\n";
             $snippets = self::get_active_snippets(['js','css','html'], 'footer');
             $out .= self::render_snippets($snippets);
             set_transient('rshf_cache_footer', $out, HOUR_IN_SECONDS);
         }
-        if( $out ){
-            echo "\n<!-- RSHF: footer -->\n" . $out . "\n<!-- /RSHF -->\n";
-        }
+        if( $out ) echo "\n<!-- RSHF: footer -->\n$out\n<!-- /RSHF -->\n";
     }
 
     public static function shortcode_snippet($atts){
         $atts = shortcode_atts(['id' => 0], $atts, 'rshf_snippet');
         $post_id = absint($atts['id']);
         if( !$post_id ) return '';
-
         $meta = rshf_get_snippet_meta($post_id);
         if( $meta['active'] !== '1' ) return '';
-
         $post = get_post($post_id);
         if( !$post || $post->post_type !== RSHF_CPT ) return '';
-
         $content = $post->post_content;
         return self::wrap_code($content, $meta['type']);
     }
-
-    // Utilities
 
     protected static function get_active_snippets($types = ['js','css','html'], $location = null){
         $args = [
@@ -91,23 +71,14 @@ class RSHF_Front {
             'orderby'        => 'meta_value_num',
             'meta_key'       => 'rshf_priority',
             'order'          => 'ASC',
-            'meta_query'     => [
-                [
-                    'key'   => 'rshf_active',
-                    'value' => '1',
-                ],
-            ],
+            'meta_query'     => [['key'=>'rshf_active','value'=>'1']],
             'fields'         => 'ids',
             'no_found_rows'  => true,
         ];
         if( $location ){
-            $args['meta_query'][] = [
-                'key'   => 'rshf_location',
-                'value' => $location,
-            ];
+            $args['meta_query'][] = ['key'=>'rshf_location','value'=>$location];
         }
         $ids = get_posts($args);
-
         $out = [];
         foreach($ids as $id){
             $meta = rshf_get_snippet_meta($id);
@@ -116,11 +87,7 @@ class RSHF_Front {
             } else {
                 if( $meta['type'] !== $types ) continue;
             }
-            $out[] = [
-                'id'      => $id,
-                'meta'    => $meta,
-                'content' => get_post_field('post_content', $id)
-            ];
+            $out[] = ['id'=>$id,'meta'=>$meta,'content'=>get_post_field('post_content',$id)];
         }
         return $out;
     }
@@ -142,7 +109,6 @@ class RSHF_Front {
         } elseif($type === 'html'){
             return $code;
         } elseif($type === 'php'){
-            // PHP in manual shortcode returns its output
             ob_start();
             self::eval_php($code, 0);
             return ob_get_clean();
@@ -151,16 +117,10 @@ class RSHF_Front {
     }
 
     protected static function eval_php($code, $id = 0){
-        if( RSHF_SafeMode::is_enabled() ){
-            return;
-        }
-        // Strip opening tag if present
+        if( RSHF_SafeMode::is_enabled() ) return;
         $code = trim($code);
-        if( strpos($code, '<?php') === 0 ){
-            $code = substr($code, 5);
-        }
+        if( strpos($code, '<?php') === 0 ){ $code = substr($code, 5); }
         try {
-            // Convert warnings/notices to exceptions for better DX
             set_error_handler(function($errno, $errstr, $errfile, $errline){
                 if (error_reporting() === 0) return false;
                 throw new \ErrorException($errstr, 0, $errno, $errfile, $errline);
@@ -178,3 +138,8 @@ class RSHF_Front {
         }
     }
 }
+add_action('wp_head', ['RSHF_Front','print_head'], 999);
+add_action('wp_body_open', ['RSHF_Front','print_body_open'], 10);
+add_action('wp_footer', ['RSHF_Front','print_footer'], 999);
+add_action('plugins_loaded', ['RSHF_Front','execute_php_snippets'], 20);
+add_shortcode('rshf_snippet', ['RSHF_Front','shortcode_snippet']);

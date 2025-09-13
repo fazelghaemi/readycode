@@ -17,6 +17,7 @@ function rshf_register_settings(){
         'show_in_rest' => false,
     ]);
 }
+add_action('admin_init', 'rshf_register_settings');
 
 function rshf_register_admin_menus(){
     $cap = rshf_capability();
@@ -34,64 +35,76 @@ function rshf_register_admin_menus(){
     add_submenu_page('rshf', __('Settings', 'readystudio-hf'), __('Settings', 'readystudio-hf'), $cap, 'rshf-settings', 'rshf_render_page_settings');
     add_submenu_page('rshf', __('Import / Export', 'readystudio-hf'), __('Import / Export', 'readystudio-hf'), $cap, 'rshf-import-export', 'rshf_render_page_import_export');
 }
+add_action('admin_menu', 'rshf_register_admin_menus');
 
 function rshf_admin_enqueue($hook){
-    if( isset($_GET['page']) && strpos($_GET['page'], 'rshf') === 0 ){
+    $screen = function_exists('get_current_screen') ? get_current_screen() : null;
+    $is_rshf_page = ( isset($_GET['page']) && strpos(sanitize_text_field($_GET['page']), 'rshf') === 0 );
+    $is_snippets_screen = ( $screen && isset($screen->post_type) && $screen->post_type === RSHF_CPT );
+
+    if( $is_rshf_page || $is_snippets_screen ){
         wp_enqueue_style('rshf-admin', RSHF_URL . 'assets/admin.css', [], RSHF_VERSION);
         wp_enqueue_script('rshf-admin', RSHF_URL . 'assets/admin.js', ['jquery'], RSHF_VERSION, true);
         wp_localize_script('rshf-admin', 'RSHF', [
             'nonce' => wp_create_nonce('rshf_ajax'),
+            'ajax'  => admin_url('admin-ajax.php'),
         ]);
     }
 }
 add_action('admin_enqueue_scripts', 'rshf_admin_enqueue');
 
+function rshf_brandbar(){
+    ?>
+    <div class="rshf-brandbar">
+        <span class="logo">
+            <img src="<?php echo esc_url(RSHF_URL . 'assets/readystudio-logo.svg'); ?>" alt="Ready Studio" width="28" height="28" loading="lazy">
+        </span>
+        <span class="title">Ready Studio — Header &amp; Footer + Snippets</span>
+        <span class="badge">v<?php echo esc_html(RSHF_VERSION); ?></span>
+    </div>
+    <?php
+}
+
 function rshf_render_page_main(){
     if( !rshf_current_user_can_manage() ) wp_die(__('Access denied', 'readystudio-hf'));
-    $opts = rshf_get_options();
-    ?>
+    $opts = rshf_get_options(); ?>
     <div class="wrap rshf-wrap">
-        <h1 class="rshf-title">ReadyStudio — Header & Footer</h1>
+        <?php rshf_brandbar(); ?>
+        <h1 class="rshf-title">Global Scripts</h1>
         <p class="rshf-subtitle"><?php _e('کدهای سراسری هدر/بدنه/فوتر را اینجا درج کنید. برای مدیریت کدهای مجزا و قابل‌فعال/غیرفعال، از منوی «Snippets» استفاده کنید.', 'readystudio-hf'); ?></p>
-
         <form method="post" action="options.php" class="rshf-card">
             <?php settings_fields('rshf_group'); ?>
             <input type="hidden" name="rshf_options[cache_bust]" value="<?php echo esc_attr(time()); ?>" />
-
             <div class="rshf-grid">
                 <div class="rshf-field">
                     <label for="rshf_head"><?php _e('Header &lt;head&gt;', 'readystudio-hf'); ?></label>
                     <textarea id="rshf_head" name="rshf_options[head_code]" rows="10" dir="ltr" spellcheck="false" placeholder="&lt;script&gt;...&lt;/script&gt;"><?php echo esc_textarea($opts['head_code']); ?></textarea>
                     <small><?php _e('برای کدهای آنالیتیکس/پیکسل/تأییدیه مالکیت.', 'readystudio-hf'); ?></small>
                 </div>
-
                 <div class="rshf-field">
                     <label for="rshf_body"><?php _e('Body (after &lt;body&gt;)', 'readystudio-hf'); ?></label>
                     <textarea id="rshf_body" name="rshf_options[body_code]" rows="8" dir="ltr" spellcheck="false" placeholder="&lt;script&gt;...&lt;/script&gt;"><?php echo esc_textarea($opts['body_code']); ?></textarea>
                     <small><?php _e('کدهایی که باید بلافاصله پس از باز شدن body قرار گیرند.', 'readystudio-hf'); ?></small>
                 </div>
-
                 <div class="rshf-field">
                     <label for="rshf_footer"><?php _e('Footer (&lt;/body&gt;)', 'readystudio-hf'); ?></label>
                     <textarea id="rshf_footer" name="rshf_options[footer_code]" rows="10" dir="ltr" spellcheck="false" placeholder="&lt;script&gt;...&lt;/script&gt;"><?php echo esc_textarea($opts['footer_code']); ?></textarea>
                     <small><?php _e('کدهای JS که بهتر است در انتهای صفحه بارگذاری شوند.', 'readystudio-hf'); ?></small>
                 </div>
             </div>
-
             <p class="rshf-actions">
                 <button type="submit" class="button button-primary button-hero"><?php _e('ذخیره تغییرات', 'readystudio-hf'); ?></button>
-                <a class="button" href="<?php echo esc_url(admin_url('admin.php?page=edit.php?post_type=' . RSHF_CPT)); ?>"><?php _e('مدیریت Snippets', 'readystudio-hf'); ?></a>
+                <a class="button" href="<?php echo esc_url( admin_url('edit.php?post_type=' . RSHF_CPT) ); ?>"><?php _e('مدیریت Snippets', 'readystudio-hf'); ?></a>
             </p>
         </form>
     </div>
-    <?php
-}
+<?php }
 
 function rshf_render_page_settings(){
     if( !rshf_current_user_can_manage() ) wp_die(__('Access denied', 'readystudio-hf'));
-    $opts = rshf_get_options();
-    ?>
+    $opts = rshf_get_options(); ?>
     <div class="wrap rshf-wrap">
+        <?php rshf_brandbar(); ?>
         <h1 class="rshf-title"><?php _e('Settings & Safe Mode', 'readystudio-hf'); ?></h1>
         <form method="post" action="options.php" class="rshf-card">
             <?php settings_fields('rshf_group'); ?>
@@ -106,18 +119,13 @@ function rshf_render_page_settings(){
             </p>
         </form>
     </div>
-    <?php
-}
+<?php }
 
 function rshf_render_page_import_export(){
     if( !rshf_current_user_can_manage() ) wp_die(__('Access denied', 'readystudio-hf'));
 
-    // Export
     if( isset($_POST['rshf_export']) && rshf_check_nonce('rshf_export') ){
-        $data = [
-            'options'  => rshf_get_options(),
-            'snippets' => [],
-        ];
+        $data = ['options'=>rshf_get_options(),'snippets'=>[]];
         $ids = get_posts([
             'post_type' => RSHF_CPT,
             'post_status' => 'publish',
@@ -136,11 +144,9 @@ function rshf_render_page_import_export(){
         $json = wp_json_encode($data, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
         header('Content-Type: application/json; charset=utf-8');
         header('Content-Disposition: attachment; filename="rshf-export-' . date('Ymd-His') . '.json"');
-        echo $json;
-        exit;
+        echo $json; exit;
     }
 
-    // Import
     if( isset($_POST['rshf_import']) && rshf_check_nonce('rshf_import') && !empty($_FILES['rshf_file']['tmp_name']) ){
         $raw = file_get_contents($_FILES['rshf_file']['tmp_name']);
         $data = json_decode($raw, true);
@@ -159,27 +165,19 @@ function rshf_render_page_import_export(){
                     if($post_id){
                         $meta = $s['meta'] ?? [];
                         foreach(['type','location','active','priority'] as $k){
-                            if(isset($meta[$k])){
-                                update_post_meta($post_id, 'rshf_' . $k, sanitize_text_field($meta[$k]));
-                            }
+                            if(isset($meta[$k])) update_post_meta($post_id, 'rshf_' . $k, sanitize_text_field($meta[$k]));
                         }
                     }
                 }
             }
-            add_action('admin_notices', function(){
-                rshf_admin_notice(__('درون‌ریزی با موفقیت انجام شد.', 'readystudio-hf'), 'success');
-            });
+            add_action('admin_notices', function(){ rshf_admin_notice(__('درون‌ریزی با موفقیت انجام شد.', 'readystudio-hf'), 'success'); });
         } else {
-            add_action('admin_notices', function(){
-                rshf_admin_notice(__('فایل JSON نامعتبر است.', 'readystudio-hf'), 'error');
-            });
+            add_action('admin_notices', function(){ rshf_admin_notice(__('فایل JSON نامعتبر است.', 'readystudio-hf'), 'error'); });
         }
-    }
-
-    ?>
+    } ?>
     <div class="wrap rshf-wrap">
+        <?php rshf_brandbar(); ?>
         <h1 class="rshf-title"><?php _e('Import / Export', 'readystudio-hf'); ?></h1>
-
         <div class="rshf-grid-2">
             <div class="rshf-card">
                 <h2><?php _e('Export all settings & snippets', 'readystudio-hf'); ?></h2>
@@ -201,5 +199,26 @@ function rshf_render_page_import_export(){
             </div>
         </div>
     </div>
-    <?php
+<?php }
+
+// AJAX: toggle snippet active
+add_action('wp_ajax_rshf_toggle_active', 'rshf_ajax_toggle_active');
+function rshf_ajax_toggle_active(){
+    if( !isset($_POST['nonce']) || !wp_verify_nonce($_POST['nonce'], 'rshf_ajax') ){
+        wp_send_json_error(['message' => __('Invalid nonce','readystudio-hf')], 403);
+    }
+    if( !rshf_current_user_can_manage() ){
+        wp_send_json_error(['message' => __('Forbidden','readystudio-hf')], 403);
+    }
+    $id = isset($_POST['id']) ? absint($_POST['id']) : 0;
+    if( !$id || get_post_type($id) !== RSHF_CPT ){
+        wp_send_json_error(['message' => __('Invalid snippet ID','readystudio-hf')], 400);
+    }
+    $meta = rshf_get_snippet_meta($id);
+    $new = $meta['active'] === '1' ? '0' : '1';
+    update_post_meta($id, 'rshf_active', $new);
+    delete_transient('rshf_cache_head');
+    delete_transient('rshf_cache_body');
+    delete_transient('rshf_cache_footer');
+    wp_send_json_success(['active' => $new]);
 }

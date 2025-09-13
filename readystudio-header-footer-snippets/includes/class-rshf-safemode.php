@@ -34,14 +34,12 @@ class RSHF_SafeMode {
 
     public static function maybe_toggle_by_request(){
         if( isset($_GET[self::GET_KEY]) && rshf_current_user_can_manage() ){
-            // ?rshf_safe=1 enables transient safe for 15 minutes
             if( $_GET[self::GET_KEY] == '1' ){
                 self::enable_transient(15);
                 add_action('admin_notices', function(){
                     rshf_admin_notice(__('حالت ایمن به مدت ۱۵ دقیقه فعال شد. اجرای اسنیپت‌های PHP موقتاً غیرفعال است.', 'readystudio-hf'), 'warning');
                 });
             }
-            // ?rshf_safe=off disables both
             if( $_GET[self::GET_KEY] === 'off' ){
                 delete_transient(self::TRANSIENT);
                 $opts = rshf_get_options();
