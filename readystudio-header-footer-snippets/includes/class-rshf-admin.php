@@ -44,7 +44,24 @@ function rshf_admin_enqueue($hook){
 
     if( $is_rshf_page || $is_snippets_screen ){
         wp_enqueue_style('rshf-admin', RSHF_URL . 'assets/admin.css', [], RSHF_VERSION);
-        wp_enqueue_script('rshf-admin', RSHF_URL . 'assets/admin.js', ['jquery'], RSHF_VERSION, true);
+        
+// /* RSHF: inline font CSS */
+$font_url = RSHF_URL . 'assets/fonts/readyfont.woff2';
+$font_css = "
+@font-face {
+  font-family: 'ReadyFont';
+  src: url('{$font_url}') format('woff2');
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+.rshf-wrap, .rshf-wrap *,
+.rshf-wrap input, .rshf-wrap select, .rshf-wrap textarea, .rshf-wrap button {
+  font-family: 'ReadyFont', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', 'Liberation Sans', sans-serif !important;
+}
+";
+wp_add_inline_style('rshf-admin', $font_css);
+wp_enqueue_script('rshf-admin', RSHF_URL . 'assets/admin.js', ['jquery'], RSHF_VERSION, true);
         wp_localize_script('rshf-admin', 'RSHF', [
             'nonce' => wp_create_nonce('rshf_ajax'),
             'ajax'  => admin_url('admin-ajax.php'),
