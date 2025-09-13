@@ -1,7 +1,8 @@
 /**
  * ReadyStudio Header & Footer - Admin UI Refresh
- * Version: 2.0.0
+ * Version: 2.1.0
  * Inspired by Google Material Design
+ * Includes styles for Settings, CPT List, and CPT Edit screens.
  */
 
 /* --- 1. Google UI Inspired Variables --- */
@@ -12,23 +13,24 @@
   --rshf-brand-rgb: 0, 176, 164;
 
   /* Surface & Background Colors */
-  --rshf-bg: #f7f9fc; /* Light blue-gray background */
-  --rshf-surface: #ffffff; /* Card and control backgrounds */
+  --rshf-bg: #f7f9fc;
+  --rshf-bg-soft: #f0f4f9;
+  --rshf-surface: #ffffff;
   
   /* Text Colors */
-  --rshf-text-primary: #1f1f1f; /* For headings and important text */
-  --rshf-text-secondary: #444746; /* For body text and labels */
-  --rshf-text-muted: #6b7280; /* For helper text and subtitles */
-  --rshf-text-on-brand: #ffffff; /* Text on brand color background */
+  --rshf-text-primary: #1f1f1f;
+  --rshf-text-secondary: #444746;
+  --rshf-text-muted: #6b7280;
+  --rshf-text-on-brand: #ffffff;
 
   /* Border & Outline Colors */
   --rshf-border: #c4c7c5;
   --rshf-border-light: #e5e7eb;
   
   /* Layout & Sizing */
-  --rshf-border-radius-lg: 16px; /* For main containers like cards */
-  --rshf-border-radius-md: 10px; /* For inputs and smaller elements */
-  --rshf-spacing: 8px; /* Base spacing unit */
+  --rshf-border-radius-lg: 16px;
+  --rshf-border-radius-md: 10px;
+  --rshf-spacing: 8px;
 
   /* Shadows */
   --rshf-shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
@@ -39,7 +41,7 @@
   --rshf-transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* --- 2. General Styles & Layout --- */
+/* --- 2. General Styles & Layout (Settings Pages) --- */
 .rshf-wrap {
   max-width: 1200px;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
@@ -49,8 +51,8 @@
   border-radius: var(--rshf-border-radius-lg);
 }
 
-/* --- 3. Brand Header --- */
-.rshf-brandbar {
+/* --- 3. Brand Header (Settings Pages) --- */
+.rshf-wrap .rshf-brandbar {
   display: flex;
   align-items: center;
   gap: calc(var(--rshf-spacing) * 2);
@@ -58,234 +60,219 @@
   border-bottom: 1px solid var(--rshf-border-light);
   margin-bottom: calc(var(--rshf-spacing) * 2);
 }
+.rshf-wrap .rshf-brandbar .logo {
+  width: 40px; height: 40px; border-radius: var(--rshf-border-radius-md); background: transparent; border: none;
+}
+.rshf-wrap .rshf-brandbar .logo img { width: 100%; height: 100%; }
+.rshf-wrap .rshf-brandbar .title { font-size: 20px; font-weight: 600; color: var(--rshf-text-primary); }
+.rshf-wrap .rshf-brandbar .badge {
+  margin-inline-start: auto; padding: 5px 12px; border-radius: 999px; background: var(--rshf-brand);
+  color: var(--rshf-text-on-brand); font-weight: 500; font-size: 13px;
+}
 
-.rshf-brandbar .logo {
-  width: 40px;
-  height: 40px;
-  border-radius: var(--rshf-border-radius-md);
+/* --- 4. Page Titles (Settings Pages) --- */
+.rshf-wrap .rshf-title {
+  font-size: 24px; font-weight: 700; color: var(--rshf-text-primary); margin-top: var(--rshf-spacing);
+  margin-bottom: var(--rshf-spacing); padding: 0 calc(var(--rshf-spacing) * 2);
+}
+.rshf-wrap .rshf-subtitle {
+  color: var(--rshf-text-muted); font-size: 15px; margin-top: 0;
+  margin-bottom: calc(var(--rshf-spacing) * 3); padding: 0 calc(var(--rshf-spacing) * 2);
+}
+
+/* --- 5. Card Component (Settings Pages) --- */
+.rshf-wrap .rshf-card {
+  background: var(--rshf-surface); border: 1px solid var(--rshf-border-light);
+  border-radius: var(--rshf-border-radius-lg); padding: calc(var(--rshf-spacing) * 3);
+  margin-top: calc(var(--rshf-spacing) * 2); box-shadow: var(--rshf-shadow-md); transition: var(--rshf-transition);
+}
+.rshf-wrap .rshf-card:hover { box-shadow: var(--rshf-shadow-lg); }
+.rshf-wrap .rshf-card h2 {
+  font-size: 18px; font-weight: 600; color: var(--rshf-text-primary); margin-top: 0;
+  padding-bottom: var(--rshf-spacing); border-bottom: 1px solid var(--rshf-border-light);
+}
+
+/* --- 6. Grid System (Settings Pages) --- */
+.rshf-wrap .rshf-grid, .rshf-wrap .rshf-grid-2 { display: grid; gap: calc(var(--rshf-spacing) * 3); }
+.rshf-wrap .rshf-grid { grid-template-columns: 1fr; }
+.rshf-wrap .rshf-grid-2 { grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); }
+
+/* --- 7. Form Fields (Settings Pages) --- */
+.rshf-wrap .rshf-field { display: flex; flex-direction: column; gap: var(--rshf-spacing); }
+.rshf-wrap .rshf-field label,
+.rshf-wrap .rshf-field-inline > label { font-weight: 500; font-size: 14px; color: var(--rshf-text-secondary); }
+.rshf-wrap .rshf-field textarea,
+.rshf-wrap select, .rshf-wrap input[type="number"] {
+  width: 100%; border-radius: var(--rshf-border-radius-md); border: 1px solid var(--rshf-border); padding: 12px;
+  background: var(--rshf-surface); color: var(--rshf-text-primary); transition: var(--rshf-transition); box-shadow: var(--rshf-shadow-sm);
+}
+.rshf-wrap .rshf-field textarea { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; line-height: 1.6; }
+.rshf-wrap .rshf-field textarea:focus,
+.rshf-wrap select:focus, .rshf-wrap input[type="number"]:focus {
+  border-color: var(--rshf-brand); box-shadow: 0 0 0 3px rgba(var(--rshf-brand-rgb), 0.2); outline: none;
+}
+.rshf-wrap .rshf-field small, .rshf-wrap .description { color: var(--rshf-text-muted); font-size: 13px; }
+.rshf-wrap .rshf-field-inline { display: flex; flex-wrap: wrap; gap: calc(var(--rshf-spacing) * 2); align-items: center; }
+
+/* --- 8. Buttons (Settings Pages) --- */
+.rshf-wrap .rshf-actions {
+  display: flex; gap: calc(var(--rshf-spacing) * 1.5); align-items: center; margin-top: calc(var(--rshf-spacing) * 3);
+  padding-top: calc(var(--rshf-spacing) * 2); border-top: 1px solid var(--rshf-border-light);
+}
+.rshf-wrap .button {
+  border-radius: var(--rshf-border-radius-md); padding: 10px 20px; font-size: 14px; font-weight: 600;
+  border: 1px solid var(--rshf-border); background: var(--rshf-surface); color: var(--rshf-text-secondary);
+  box-shadow: var(--rshf-shadow-md); transition: var(--rshf-transition);
+}
+.rshf-wrap .button:hover { border-color: var(--rshf-text-secondary); color: var(--rshf-text-primary); }
+.rshf-wrap .button.button-primary { background: var(--rshf-brand); border-color: var(--rshf-brand); color: var(--rshf-text-on-brand); }
+.rshf-wrap .button.button-primary:hover { background: var(--rshf-brand-dark); border-color: var(--rshf-brand-dark); color: var(--rshf-text-on-brand); }
+.rshf-wrap .button.button-primary.button-hero { padding: 12px 24px; font-size: 16px; }
+.rshf-wrap .button:active { transform: scale(0.98); box-shadow: none; }
+
+/* --- 9. Toggle Switch (Shared) --- */
+.rshf-switch { position: relative; display: inline-block; width: 44px; height: 24px; vertical-align: middle; }
+.rshf-switch input { display: none; }
+.rshf-slider { position: absolute; cursor: pointer; inset: 0; background: #ccc; border-radius: 34px; transition: var(--rshf-transition); }
+.rshf-slider:before {
+  content: ""; position: absolute; height: 18px; width: 18px; left: 3px; top: 3px; background: white;
+  border-radius: 50%; transition: var(--rshf-transition); box-shadow: var(--rshf-shadow-sm);
+}
+.rshf-switch input:checked + .rshf-slider { background: var(--rshf-brand); }
+.rshf-switch input:checked + .rshf-slider:before { transform: translateX(20px); }
+
+/* --- 10. Icon System (Shared) --- */
+.rshf-ico {
+  display: inline-block; width: 18px; height: 18px; background-color: currentColor;
+  -webkit-mask-size: contain; mask-size: contain; -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat; vertical-align: middle;
+}
+
+/* ================================================================
+== NEW STYLES FOR CPT LIST & EDIT SCREENS ==
+================================================================
+*/
+
+/* --- 11. CPT List Table (Snippets) --- */
+/* We use the body class to only target the Snippets list screen */
+body.post-type-rshf_snippet .wp-list-table {
+  border: none;
+  border-radius: var(--rshf-border-radius-lg);
+  box-shadow: var(--rshf-shadow-md);
   overflow: hidden;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
+}
+
+body.post-type-rshf_snippet .wp-list-table thead th,
+body.post-type-rshf_snippet .wp-list-table tfoot th {
+  background-color: var(--rshf-bg-soft);
+  border-bottom: 1px solid var(--rshf-border);
+}
+
+body.post-type-rshf_snippet .wp-list-table tr {
+  background: var(--rshf-surface);
+}
+
+body.post-type-rshf_snippet .wp-list-table tbody tr:not(.no-items):hover {
+  background-color: var(--rshf-bg-soft);
+}
+
+body.post-type-rshf_snippet .wp-list-table td,
+body.post-type-rshf_snippet .wp-list-table th {
+  border-bottom: 1px solid var(--rshf-border-light);
+  padding: 16px;
+}
+
+/* Style the custom columns to look like badges */
+body.post-type-rshf_snippet .wp-list-table td.column-rshf_type,
+body.post-type-rshf_snippet .wp-list-table td.column-rshf_location {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  font-size: 13px;
+  background-color: var(--rshf-bg-soft);
+  padding: 5px 10px;
+  border-radius: 6px;
+  display: inline-block;
+  line-height: 1.4;
+  font-weight: 500;
+  text-transform: capitalize;
+}
+
+/* Align toggle switch vertically */
+body.post-type-rshf_snippet .wp-list-table td.column-rshf_active {
+  vertical-align: middle;
+}
+
+/* --- 12. CPT Edit Screen (Snippets) --- */
+/* Scoping for Add New and Edit Snippet pages */
+body.post-type-rshf_snippet.post-php,
+body.post-type-rshf_snippet.post-new-php {
+  background-color: var(--rshf-bg);
+}
+
+/* Style our custom meta box */
+body.post-type-rshf_snippet #rshf_meta {
   background: transparent;
   border: none;
+  box-shadow: none;
 }
 
-.rshf-brandbar .logo img {
-    width: 100%;
-    height: 100%;
-}
-
-.rshf-brandbar .title {
-  font-size: 20px;
-  font-weight: 600;
-  color: var(--rshf-text-primary);
-}
-
-.rshf-brandbar .badge {
-  margin-inline-start: auto;
-  padding: 5px 12px;
-  border-radius: 999px;
-  background: var(--rshf-brand);
-  color: var(--rshf-text-on-brand);
-  font-weight: 500;
-  font-size: 13px;
-}
-
-/* --- 4. Page Titles --- */
-.rshf-title {
-  font-size: 24px;
-  font-weight: 700;
-  color: var(--rshf-text-primary);
-  margin-top: var(--rshf-spacing);
-  margin-bottom: var(--rshf-spacing);
-  padding: 0 calc(var(--rshf-spacing) * 2);
-}
-
-.rshf-subtitle {
-  color: var(--rshf-text-muted);
-  font-size: 15px;
-  margin-top: 0;
-  margin-bottom: calc(var(--rshf-spacing) * 3);
-  padding: 0 calc(var(--rshf-spacing) * 2);
-}
-
-/* --- 5. Card Component --- */
-.rshf-card {
-  background: var(--rshf-surface);
+body.post-type-rshf_snippet #rshf_meta .hndle {
+  background-color: var(--rshf-bg-soft);
   border: 1px solid var(--rshf-border-light);
-  border-radius: var(--rshf-border-radius-lg);
-  padding: calc(var(--rshf-spacing) * 3);
-  margin-top: calc(var(--rshf-spacing) * 2);
+  border-bottom: none;
+  border-radius: var(--rshf-border-radius-md) var(--rshf-border-radius-md) 0 0;
+  padding: 12px 16px;
+}
+
+body.post-type-rshf_snippet #rshf_meta .inside {
+  background-color: var(--rshf-surface);
+  border: 1px solid var(--rshf-border-light);
+  border-top: none;
   box-shadow: var(--rshf-shadow-md);
-  transition: var(--rshf-transition);
-}
-.rshf-card:hover {
-    box-shadow: var(--rshf-shadow-lg);
+  border-radius: 0 0 var(--rshf-border-radius-md) var(--rshf-border-radius-md);
+  padding: 16px;
 }
 
-.rshf-card h2 {
-    font-size: 18px;
-    font-weight: 600;
-    color: var(--rshf-text-primary);
-    margin-top: 0;
-    padding-bottom: var(--rshf-spacing);
-    border-bottom: 1px solid var(--rshf-border-light);
+body.post-type-rshf_snippet #rshf_meta p {
+  padding: 0 0 16px 0;
+  margin: 0;
+}
+body.post-type-rshf_snippet #rshf_meta p:last-child {
+  padding-bottom: 0;
 }
 
-/* --- 6. Grid System --- */
-.rshf-grid, .rshf-grid-2 {
-  display: grid;
-  gap: calc(var(--rshf-spacing) * 3);
-}
-.rshf-grid { grid-template-columns: 1fr; }
-.rshf-grid-2 { grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); }
-
-/* --- 7. Form Fields & Controls --- */
-.rshf-field {
-  display: flex;
-  flex-direction: column;
-  gap: var(--rshf-spacing);
-}
-
-.rshf-field label,
-.rshf-field-inline > label {
+/* Style form elements inside our meta box */
+body.post-type-rshf_snippet #rshf_meta strong {
+  display: block;
+  margin-bottom: 8px;
   font-weight: 500;
-  font-size: 14px;
   color: var(--rshf-text-secondary);
 }
 
-.rshf-field textarea,
-.rshf-wrap select,
-.rshf-wrap input[type="number"] {
+body.post-type-rshf_snippet #rshf_meta select,
+body.post-type-rshf_snippet #rshf_meta input[type="number"] {
   width: 100%;
   border-radius: var(--rshf-border-radius-md);
   border: 1px solid var(--rshf-border);
-  padding: 12px;
-  background: var(--rshf-surface);
+  padding: 10px;
+  background: var(--rshf-bg-soft);
   color: var(--rshf-text-primary);
   transition: var(--rshf-transition);
-  box-shadow: var(--rshf-shadow-sm);
 }
-.rshf-field textarea {
-    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-    line-height: 1.6;
-}
-.rshf-field textarea:focus,
-.rshf-wrap select:focus,
-.rshf-wrap input[type="number"]:focus {
+
+body.post-type-rshf_snippet #rshf_meta select:focus,
+body.post-type-rshf_snippet #rshf_meta input[type="number"]:focus {
   border-color: var(--rshf-brand);
+  background-color: var(--rshf-surface);
   box-shadow: 0 0 0 3px rgba(var(--rshf-brand-rgb), 0.2);
   outline: none;
 }
 
-.rshf-field small, .rshf-wrap .description {
-  color: var(--rshf-text-muted);
-  font-size: 13px;
+/* Style Publish meta box to match */
+body.post-type-rshf_snippet #submitdiv .hndle {
+  background-color: var(--rshf-bg-soft);
+  border-bottom: 1px solid var(--rshf-border-light);
 }
 
-.rshf-field-inline {
-  display: flex;
-  flex-wrap: wrap;
-  gap: calc(var(--rshf-spacing) * 2);
-  align-items: center;
-}
-
-/* --- 8. Buttons --- */
-.rshf-actions {
-  display: flex;
-  gap: calc(var(--rshf-spacing) * 1.5);
-  align-items: center;
-  margin-top: calc(var(--rshf-spacing) * 3);
-  padding-top: calc(var(--rshf-spacing) * 2);
-  border-top: 1px solid var(--rshf-border-light);
-}
-
-.rshf-wrap .button {
-    border-radius: var(--rshf-border-radius-md);
-    padding: 10px 20px;
-    font-size: 14px;
-    font-weight: 600;
-    border: 1px solid var(--rshf-border);
-    background: var(--rshf-surface);
-    color: var(--rshf-text-secondary);
-    box-shadow: var(--rshf-shadow-md);
-    transition: var(--rshf-transition);
-}
-.rshf-wrap .button:hover {
-    border-color: var(--rshf-text-secondary);
-    color: var(--rshf-text-primary);
-}
-
-.rshf-wrap .button.button-primary {
-    background: var(--rshf-brand);
-    border-color: var(--rshf-brand);
-    color: var(--rshf-text-on-brand);
-}
-.rshf-wrap .button.button-primary:hover {
-    background: var(--rshf-brand-dark);
-    border-color: var(--rshf-brand-dark);
-    color: var(--rshf-text-on-brand);
-}
-.rshf-wrap .button.button-primary.button-hero {
-    padding: 12px 24px;
-    font-size: 16px;
-}
-.rshf-wrap .button:active {
-    transform: scale(0.98);
-    box-shadow: none;
-}
-
-/* --- 9. Toggle Switch --- */
-.rshf-switch {
-  position: relative;
-  display: inline-block;
-  width: 44px;
-  height: 24px;
-  vertical-align: middle;
-}
-.rshf-switch input { display: none; }
-
-.rshf-slider {
-  position: absolute;
-  cursor: pointer;
-  inset: 0;
-  background: #ccc;
-  border-radius: 34px;
-  transition: var(--rshf-transition);
-}
-
-.rshf-slider:before {
-  content: "";
-  position: absolute;
-  height: 18px;
-  width: 18px;
-  left: 3px;
-  top: 3px;
-  background: white;
-  border-radius: 50%;
-  transition: var(--rshf-transition);
-  box-shadow: var(--rshf-shadow-sm);
-}
-
-.rshf-switch input:checked + .rshf-slider { background: var(--rshf-brand); }
-.rshf-switch input:checked + .rshf-slider:before { transform: translateX(20px); }
-
-/* --- 10. Icon System (No changes needed, already well-implemented) --- */
-.rshf-ico {
-  display: inline-block;
-  width: 18px;
-  height: 18px;
-  background-color: currentColor;
-  -webkit-mask-size: contain;
-  mask-size: contain;
-  -webkit-mask-repeat: no-repeat;
-  mask-repeat: no-repeat;
-  vertical-align: middle;
-}
-/* Icon masks... */
-
-/* --- 11. Responsive Grid --- */
+/* --- 13. Responsive Grid --- */
 @media (max-width: 980px) {
-  .rshf-grid-2 { grid-template-columns: 1fr; }
+  .rshf-wrap .rshf-grid-2 { grid-template-columns: 1fr; }
 }

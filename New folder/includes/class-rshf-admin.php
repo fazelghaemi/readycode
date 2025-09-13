@@ -44,58 +44,6 @@ function rshf_admin_enqueue($hook){
 
     if( $is_rshf_page || $is_snippets_screen ){
         wp_enqueue_style('rshf-admin', RSHF_URL . 'assets/admin.css', [], RSHF_VERSION);
-        
-        
-        // /* RSHF: inline font CSS */
-        $rshf_font_path = RSHF_PATH . 'assets/fonts/readyfont.woff2';
-        $rshf_font_url  = RSHF_URL  . 'assets/fonts/readyfont.woff2';
-        if ( file_exists( $rshf_font_path ) ) {
-            $font_css = "
-            @font-face {
-              font-family: 'ReadyFont';
-              src: url('{$rshf_font_url}') format('woff2');
-              font-weight: 100 900;
-              font-style: normal;
-              font-display: swap;
-            }
-            .rshf-wrap, .rshf-wrap *,
-            .rshf-wrap input, .rshf-wrap select, .rshf-wrap textarea, .rshf-wrap button {
-              font-family: 'ReadyFont', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', 'Liberation Sans', sans-serif !important;
-            }";
-            wp_add_inline_style('rshf-admin', $font_css);
-            add_action('admin_head', function(){
-                // Preload only when we are on our pages
-                $screen = function_exists('get_current_screen') ? get_current_screen() : null;
-                $is_rshf = ( isset($_GET['page']) && strpos(sanitize_text_field($_GET['page']), 'rshf') === 0 ) || ( $screen && isset($screen->post_type) && $screen->post_type === RSHF_CPT );
-                if( $is_rshf ){
-                    echo '<link rel="preload" href="' . esc_url( RSHF_URL . 'assets/fonts/readyfont.woff2' ) . '" as="font" type="font/woff2" crossorigin>';
-                }
-            });
-        } else {
-            add_action('admin_notices', function(){
-                if ( current_user_can( rshf_capability() ) ){
-                    rshf_admin_notice(__('ReadyFont یافت نشد: لطفاً فایل assets/fonts/readyfont.woff2 را قرار دهید.', 'readystudio-hf'), 'warning');
-                }
-            });
-        }
-        // /* RSHF: inline icon CSS */
-        $icon_base = trailingslashit( RSHF_URL . 'assets/icons' );
-        $inline_icons = "
-        .rshf-ico{display:inline-block;width:18px;height:18px;background-color:currentColor;-webkit-mask-size:contain;mask-size:contain;-webkit-mask-repeat:no-repeat;mask-repeat:no-repeat;vertical-align:middle}
-        .rshf-ico.header{-webkit-mask-image:url('{$icon_base}header.svg');mask-image:url('{$icon_base}header.svg')}
-        .rshf-ico.body{-webkit-mask-image:url('{$icon_base}body.svg');mask-image:url('{$icon_base}body.svg')}
-        .rshf-ico.footer{-webkit-mask-image:url('{$icon_base}footer.svg');mask-image:url('{$icon_base}footer.svg')}
-        .rshf-ico.php{-webkit-mask-image:url('{$icon_base}php.svg');mask-image:url('{$icon_base}php.svg')}
-        .rshf-ico.css{-webkit-mask-image:url('{$icon_base}css.svg');mask-image:url('{$icon_base}css.svg')}
-        .rshf-ico.js{-webkit-mask-image:url('{$icon_base}js.svg');mask-image:url('{$icon_base}js.svg')}
-        .rshf-ico.html{-webkit-mask-image:url('{$icon_base}html.svg');mask-image:url('{$icon_base}html.svg')}
-        .rshf-ico.settings{-webkit-mask-image:url('{$icon_base}settings.svg');mask-image:url('{$icon_base}settings.svg')}
-        .rshf-ico.info{-webkit-mask-image:url('{$icon_base}info.svg');mask-image:url('{$icon_base}info.svg')}
-        .rshf-ico.warning{-webkit-mask-image:url('{$icon_base}warning.svg');mask-image:url('{$icon_base}warning.svg')}
-        .rshf-ico.check{-webkit-mask-image:url('{$icon_base}check.svg');mask-image:url('{$icon_base}check.svg')}
-        ";
-        wp_add_inline_style('rshf-admin', $inline_icons);
-        
         wp_enqueue_script('rshf-admin', RSHF_URL . 'assets/admin.js', ['jquery'], RSHF_VERSION, true);
         wp_localize_script('rshf-admin', 'RSHF', [
             'nonce' => wp_create_nonce('rshf_ajax'),
@@ -122,7 +70,7 @@ function rshf_render_page_main(){
     $opts = rshf_get_options(); ?>
     <div class="wrap rshf-wrap">
         <?php rshf_brandbar(); ?>
-        <h1 class="rshf-title">Global Scripts</h1>
+        <h1 class="rshf-title"><span class="rshf-ico settings" aria-hidden="true"></span> Global Scripts</h1>
         <p class="rshf-subtitle"><?php _e('کدهای سراسری هدر/بدنه/فوتر را اینجا درج کنید. برای مدیریت کدهای مجزا و قابل‌فعال/غیرفعال، از منوی «Snippets» استفاده کنید.', 'readystudio-hf'); ?></p>
         <form method="post" action="options.php" class="rshf-card">
             <?php settings_fields('rshf_group'); ?>
@@ -157,17 +105,17 @@ function rshf_render_page_settings(){
     $opts = rshf_get_options(); ?>
     <div class="wrap rshf-wrap">
         <?php rshf_brandbar(); ?>
-        <h1 class="rshf-title"><?php _e('Settings & Safe Mode', 'readystudio-hf'); ?></h1>
+        <h1 class="rshf-title"><span class="rshf-ico settings" aria-hidden="true"></span> <?php _e('Settings & Safe Mode', 'readystudio-hf'); ?></h1>
         <form method="post" action="options.php" class="rshf-card">
             <?php settings_fields('rshf_group'); ?>
             <div class="rshf-field-inline">
                 <label><input type="checkbox" name="rshf_options[safe_mode]" value="1" <?php checked($opts['safe_mode'], 1); ?> /> <?php _e('فعال‌سازی حالت ایمن (غیرفعال‌سازی اجرای PHP Snippetها)', 'readystudio-hf'); ?></label>
-                <a class="button" href="<?php echo esc_url( add_query_arg(['rshf_safe' => '1']) ); ?>"><?php _e('Safe Mode موقت (۱۵ دقیقه)', 'readystudio-hf'); ?></a>
-                <a class="button" href="<?php echo esc_url( add_query_arg(['rshf_safe' => 'off']) ); ?>"><?php _e('غیرفعال کردن Safe Mode', 'readystudio-hf'); ?></a>
+                <a class="button" href="<?php echo esc_url( add_query_arg(['rshf_safe' => '1']) ); ?>"><?php "<span class=\"rshf-ico warning\" aria-hidden=\"true\"></span> " . __('Safe Mode موقت (۱۵ دقیقه)', 'readystudio-hf'); ?></a>
+                <a class="button" href="<?php echo esc_url( add_query_arg(['rshf_safe' => 'off']) ); ?>"><?php "<span class=\"rshf-ico info\" aria-hidden=\"true\"></span> " . __('غیرفعال کردن Safe Mode', 'readystudio-hf'); ?></a>
             </div>
             <p class="description"><?php _e('اگر اسنیپت PHP مشکل‌دار باعث خطای سایت شد، با افزودن ?rshf_safe=1 به URL (برای مدیر) اجرای PHP Snippetها تا ۱۵ دقیقه متوقف می‌شود.', 'readystudio-hf'); ?></p>
             <p class="rshf-actions">
-                <button type="submit" class="button button-primary"><?php _e('ذخیره تنظیمات', 'readystudio-hf'); ?></button>
+                <button type="submit" class="button button-primary"><span class="rshf-ico check" aria-hidden="true"></span> <?php _e('ذخیره تنظیمات', 'readystudio-hf'); ?></button>
             </p>
         </form>
     </div>
@@ -229,14 +177,14 @@ function rshf_render_page_import_export(){
     } ?>
     <div class="wrap rshf-wrap">
         <?php rshf_brandbar(); ?>
-        <h1 class="rshf-title"><?php _e('Import / Export', 'readystudio-hf'); ?></h1>
+        <h1 class="rshf-title"><span class="rshf-ico download" aria-hidden="true"></span> <?php _e('Import / Export', 'readystudio-hf'); ?></h1>
         <div class="rshf-grid-2">
             <div class="rshf-card">
                 <h2><?php _e('Export all settings & snippets', 'readystudio-hf'); ?></h2>
                 <form method="post">
                     <?php rshf_nonce_field('rshf_export'); ?>
                     <p><?php _e('یک فایل JSON شامل تنظیمات و تمام اسنیپت‌ها دانلود خواهد شد.', 'readystudio-hf'); ?></p>
-                    <button class="button button-primary"><?php _e('Export JSON', 'readystudio-hf'); ?></button>
+                    <button class="button button-primary"><span class="rshf-ico download" aria-hidden="true"></span> <?php _e('Export JSON', 'readystudio-hf'); ?></button>
                     <input type="hidden" name="rshf_export" value="1"/>
                 </form>
             </div>
@@ -245,7 +193,7 @@ function rshf_render_page_import_export(){
                 <form method="post" enctype="multipart/form-data">
                     <?php rshf_nonce_field('rshf_import'); ?>
                     <p><input type="file" name="rshf_file" accept="application/json" required /></p>
-                    <button class="button"><?php _e('Import', 'readystudio-hf'); ?></button>
+                    <button class="button"><span class="rshf-ico upload" aria-hidden="true"></span> <?php _e('Import', 'readystudio-hf'); ?></button>
                     <input type="hidden" name="rshf_import" value="1"/>
                 </form>
             </div>

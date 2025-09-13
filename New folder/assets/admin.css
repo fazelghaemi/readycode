@@ -1,0 +1,53 @@
+:root{
+  --rshf-brand:#00b0a4;
+  --rshf-text:#111827;
+  --rshf-muted:#6b7280;
+  --rshf-border:#e5e7eb;
+  --rshf-bg:#ffffff;
+  --rshf-bg-soft:#f9fafb;
+}
+.rshf-wrap{max-width:1200px;}
+.rshf-brandbar{display:flex;align-items:center;gap:12px;margin:18px 0 8px}
+.rshf-brandbar .logo{width:32px;height:32px;border-radius:8px;overflow:hidden;display:inline-flex;align-items:center;justify-content:center;background:var(--rshf-bg-soft);border:1px solid var(--rshf-border)}
+.rshf-brandbar .title{font-size:22px;font-weight:800;color:var(--rshf-text)}
+.rshf-brandbar .badge{margin-inline-start:auto;padding:4px 10px;border-radius:999px;background:var(--rshf-brand);color:#fff;font-weight:700}
+.rshf-title{font-size:20px;margin-top:12px;margin-bottom:8px}
+.rshf-subtitle{color:var(--rshf-muted);margin-top:0}
+.rshf-card{background:var(--rshf-bg);border:1px solid var(--rshf-border);border-radius:14px;padding:20px;margin-top:16px;box-shadow:0 2px 10px rgba(0,0,0,.04)}
+.rshf-grid{display:grid;grid-template-columns:1fr;gap:16px}
+.rshf-grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.rshf-field label{font-weight:600;display:block;margin-bottom:6px}
+.rshf-field textarea{width:100%;font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono","Courier New", monospace;border-radius:10px;border:1px solid #d1d5db;padding:12px;background:var(--rshf-bg-soft)}
+.rshf-field small{color:var(--rshf-muted)}
+.rshf-field-inline{display:flex;gap:10px;align-items:center}
+.rshf-actions{display:flex;gap:10px;align-items:center;margin-top:10px}
+.rshf-safe-mode-badge .ab-item{background:#f59e0b !important;color:#111 !important;font-weight:700}
+
+/* Toggle switch */
+.rshf-switch{position:relative;display:inline-block;width:44px;height:24px;vertical-align:middle}
+.rshf-switch input{display:none}
+.rshf-slider{position:absolute;cursor:pointer;top:0;left:0;right:0;bottom:0;background:#d1d5db;border-radius:999px;transition:.2s}
+.rshf-slider:before{content:"";position:absolute;height:18px;width:18px;left:3px;top:3px;background:white;border-radius:50%;transition:.2s;box-shadow:0 1px 3px rgba(0,0,0,.2)}
+.rshf-switch input:checked + .rshf-slider{background:var(--rshf-brand)}
+.rshf-switch input:checked + .rshf-slider:before{transform:translateX(20px)}
+
+/* Icon system (mask) */
+.rshf-ico{display:inline-block;width:18px;height:18px;background-color:currentColor; -webkit-mask-size:contain; mask-size:contain; -webkit-mask-repeat:no-repeat; mask-repeat:no-repeat; vertical-align:middle}
+.rshf-ico.edit{-webkit-mask-image:url('../assets/icons/edit.svg');mask-image:url('../assets/icons/edit.svg')}
+.rshf-ico.trash{-webkit-mask-image:url('../assets/icons/trash.svg');mask-image:url('../assets/icons/trash.svg')}
+.rshf-ico.eye{-webkit-mask-image:url('../assets/icons/eye.svg');mask-image:url('../assets/icons/eye.svg')}
+.rshf-ico.download{-webkit-mask-image:url('../assets/icons/download.svg');mask-image:url('../assets/icons/download.svg')}
+.rshf-ico.upload{-webkit-mask-image:url('../assets/icons/upload.svg');mask-image:url('../assets/icons/upload.svg')}
+.rshf-ico.settings{-webkit-mask-image:url('../assets/icons/settings.svg');mask-image:url('../assets/icons/settings.svg')}
+.rshf-ico.info{-webkit-mask-image:url('../assets/icons/info.svg');mask-image:url('../assets/icons/info.svg')}
+.rshf-ico.warning{-webkit-mask-image:url('../assets/icons/warning.svg');mask-image:url('../assets/icons/warning.svg')}
+.rshf-ico.check{-webkit-mask-image:url('../assets/icons/check.svg');mask-image:url('../assets/icons/check.svg')}
+.rshf-ico.php{-webkit-mask-image:url('../assets/icons/php.svg');mask-image:url('../assets/icons/php.svg')}
+.rshf-ico.css{-webkit-mask-image:url('../assets/icons/css.svg');mask-image:url('../assets/icons/css.svg')}
+.rshf-ico.js{-webkit-mask-image:url('../assets/icons/js.svg');mask-image:url('../assets/icons/js.svg')}
+.rshf-ico.html{-webkit-mask-image:url('../assets/icons/html.svg');mask-image:url('../assets/icons/html.svg')}
+.rshf-ico.header{-webkit-mask-image:url('../assets/icons/header.svg');mask-image:url('../assets/icons/header.svg')}
+.rshf-ico.body{-webkit-mask-image:url('../assets/icons/body.svg');mask-image:url('../assets/icons/body.svg')}
+.rshf-ico.footer{-webkit-mask-image:url('../assets/icons/footer.svg');mask-image:url('../assets/icons/footer.svg')}
+
+@media (max-width: 980px){ .rshf-grid-2{grid-template-columns:1fr} }
